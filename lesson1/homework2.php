@@ -68,3 +68,25 @@ var_dump("Исходный массив: ", $array);
 var_dump("Отсортированный массив: ", $sortedArr);
 var_dump("Суммы отсортированного массива: ", $sums);
 
+// Задание 5
+$toUp = function($string) {
+	return strtoupper($string);
+};
+
+$toDown = function($string) {
+	return strtolower($string);
+};
+
+$toUpDown = function($string) {
+	$string = strtolower($string);
+	return ucwords($string);
+};
+
+function converter($string, $func) {
+	return $func($string);
+}
+
+$someStr = "jehSklh HGgFHgcbglvGuTF fu";
+var_dump(converter($someStr, $toUp));
+var_dump(converter($someStr, $toDown));
+var_dump(converter($someStr, $toUpDown));
