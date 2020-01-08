@@ -9,7 +9,10 @@
 		<input type="url" name="url_text">
 		<input type="submit" name="Отправить">
 	</form>
-	<div id="answer">
+	
+	<div>
+		<h3>Сокращённая ссылка:</h3>
+		<p id="answer"></p>
 		<!-- поле для вывода ответа -->
 	</div>
 </body>

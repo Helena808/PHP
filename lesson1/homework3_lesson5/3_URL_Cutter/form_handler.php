@@ -5,13 +5,17 @@
 //2. файл JS - получает урл, аяксом отпарвляет на сервер (в пхп)
 //3. обработчик формы в пхп обрабатывает (проверки, запись в файл [лучше с новой строки, тогда это будет массив, с ним проще работать] и т.п.) и отправляет ответ в JS
 //4. JS отправляет ответ в форму для вывода ответа на странице
-$filename = "url.txt";
-$urlArr = file($filename, FILE_IGNORE_NEW_LINES, FILE_SKIP_EMPTY_LINES);
+$urlFile = "url.txt";
+$urlArr = file($urlFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+$server = $_SERVER;
+if ($server['REQUEST_METHOD'] ==='POST') {
+	echo server_answer($urlFile, $urlArr);
+};
 
-function server_answer() {
+function server_answer($filename, $arr) {
 	$post = $_POST;
 	$url_text = $post['url_text'];
-	var_dump($url_text);
+	var_dump($arr);
 
 	// Проверка на пустоту
 	if (!isset($url_text)) {
@@ -19,57 +23,59 @@ function server_answer() {
 		return;
 	};
 
-	//Обрезали лишние пробелы
-	trim($url_text);
-
 	//Проверка на URL
 	if (!filter_var($url_text, FILTER_VALIDATE_URL)) {
 		var_dump('Введённые данные не являются URL');
 		return;
 	};
+	var_dump("Тут работает");
+
+	var_dump($arr);
 
 	// Проверка наличия в файле
-	$in_file = null;
-	foreach ($urlArr as $value) {
-		if (strripos($url_text, $value) === false) {
-			$in_file = false;
-		} else {
-			$in_file = true;
-			// такая строка есть и отвалите
-			break
+	if (count($arr) > 0) {
+		$in_file = null;
+		foreach ($arr as $value) {
+			var_dump($url_text);
+			var_dump($value);
+			if (strripos($value, $url_text) === false) {
+				$in_file = false;
+				var_dump("Нет такого в файле");
+			} else {
+				
+				// Если такой URL уже есть
+				$in_file = true;
+				var_dump("Уже есть такой");
+				$answer = substr(stristr($value, '^^^'), 3);
+				return $answer;
+			};
 		};
 	};
+	
+	// Если такого URL ещё нет
 	if (!$in_file) {
+		
 		//Хеш-имя
 		$symbols = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 		do {
-			$url_hash = substr(str_shuffle($symbols), 0, 16);
-			foreach ($urlArr as $value) {
-				if (strripos($url_hash, $value) === false) {
-					$in_file_hash = false;
-				} else {
-					$in_file_hash = true;
-					break
+			$url_hash = substr(str_shuffle($symbols), 0, 8);
+			$in_file_hash = false;
+			if (count($arr) > 0) {
+				foreach ($arr as $value) {
+					if (strripos($value, $url_hash) === false) {
+						$in_file_hash = false;
+					} else {
+						$in_file_hash = true;
+					};
 				};
 			};
 		} while ($in_file_hash === true);
 		
-
 		// Добавление новой строки
-		file_put_contents($filename, $url_text."^^^".$url_hash."\r\n", FILE_APPEND);
-		
-	}
+		$new_string = $url_text."^^^".$url_hash."\r\n";
+		file_put_contents($filename, $new_string, FILE_APPEND | LOCK_EX);
+		return $url_hash;		
+	};
 
 }
 
-
-
-
-
-
-
-
-$server = $_SERVER;
-if ($server['REQUEST_METHOD'] ==='POST') {
-	echo server_answer();
-}
