@@ -70,23 +70,22 @@ var_dump("Суммы отсортированного массива: ", $sums);
 
 // Задание 5
 $toUp = function($string) {
-	return strtoupper($string);
+	return mb_convert_case($string, MB_CASE_UPPER, "UTF-8");
 };
 
 $toDown = function($string) {
-	return strtolower($string);
+	return mb_convert_case($string, MB_CASE_LOWER, "UTF-8");
 };
 
 $toUpDown = function($string) {
-	$string = strtolower($string);
-	return ucwords($string);
+	return mb_convert_case($string, MB_CASE_TITLE, "UTF-8");
 };
 
 function converter($string, $func) {
 	return $func($string);
 }
 
-$someStr = "jehSklh HGgFHgcbglvGuTF fu";
+$someStr = "одвдОРГ ШтсфРСииЛРП";
 var_dump(converter($someStr, $toUp));
 var_dump(converter($someStr, $toDown));
 var_dump(converter($someStr, $toUpDown));
